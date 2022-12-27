@@ -9,15 +9,37 @@
 
 ## 目标非目标
 
-- 服务端API
+服务端
+
+- 参考[Kubernetes CRD](https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/) 和 [OpenAPI v3](https://spec.openapis.org/oas/v3.1.0) 以及 [Halo Extension]([rfcs/extension at main · halo-dev/rfcs · GitHub](https://github.com/halo-dev/rfcs/tree/main/extension)) 设计定制资源定义，方面插件进行数据持久化
+- 服务端API支持插件进行拓展，core 提供统一的API生成方式，权限暂时不做更细粒度的划分，全部走`JWT`
+- 实现插件的类加载，并提供对插件操作的API
+- core 提供 hook，供插件在一些非关键地方进行操作，非关键指的是不影响本体的正常运行
+- 插件静态资源文件的加载，包括插件的配置文件 和 插件的管理端拓展打包文件
+- 为了安全考虑，core 不能把所有的API暴露给插件，需要提供接口暴露可开放的API给插件调用
+
+管理端前端(admin)
+
+- 可通过插件在各级导航栏插入新的功能入口
+- 新页面的添加
+- 通过hook增强各个页面或组件的功能
+
+公共目标
+
+- 插件管理：提供可视化的插件管理机制，支持插件的安装、卸载、启用、停用、配置、升级。
+- 插件框架：提供插件开发、打包、发布相关的脚手架，提供完善的插件开发文档。
 
 ## 背景和动机
 
 为拓展系统功能性，需要插件模块进行支持
 
-*现状如何？为什么要提出这种改变？*
+## 术语
 
-*在此处定义任何关键术语或内部名称。*
+- core: 本体，核心模块
+
+- admin: 管理端
+
+- hook: core预留的增强功能的钩子
 
 ## 设计
 
@@ -31,7 +53,7 @@
 
 ## 依赖项
 
-*这个依赖于哪些现有的内部和外部系统？它将如何使用它们？*
+依赖于 pf4j 和 java 类加载
 
 ## 考虑的替代方案 / 现有技术
 
