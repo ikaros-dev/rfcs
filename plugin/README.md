@@ -7,7 +7,7 @@
 | **所有者** | [li-guohao](mailto:git@liguohao.cn) |
 | **贡献者** | 暂无                                  |
 
-## 目标非目标
+## 目标
 
 服务端
 
@@ -16,12 +16,13 @@
 - 实现插件的类加载，并提供对插件操作的API
 - core 提供 hook，供插件在一些非关键地方进行操作，非关键指的是不影响本体的正常运行
 - 插件静态资源文件的加载，包括插件的配置文件 和 插件的管理端拓展打包文件
-- 为了安全考虑，core 不能把所有的API暴露给插件，需要提供接口暴露可开放的API给插件调用
+- 为了安全考虑，core 不能把所有的方法调用暴露给插件，需要提供接口暴露可开放的方法给插件调用
 
 管理端前端(admin)
 
 - 可通过插件在各级导航栏插入新的功能入口
-- 新页面的添加
+- 可通过插件添加新页面
+- 可通过插件添加自定义导航栏路由
 - 通过hook增强各个页面或组件的功能
 
 公共目标
@@ -29,11 +30,17 @@
 - 插件管理：提供可视化的插件管理机制，支持插件的安装、卸载、启用、停用、配置、升级。
 - 插件框架：提供插件开发、打包、发布相关的脚手架，提供完善的插件开发文档。
 
+## 非目标
+
+
+
 ## 背景和动机
 
 为拓展系统功能性，需要插件模块进行支持
 
-## 术语
+## 设计
+
+### 术语
 
 - core: 本体，核心模块
 
@@ -41,11 +48,43 @@
 
 - hook: core预留的增强功能的钩子
 
-## 设计
+### 服务端(Backend)
 
-*你到底在做什么？包括架构和流程图。*
+#### 描述
 
-*这通常是 RFC 中最长的部分。*
+插件启用时由 PluginManager 负责加载，包括:
+
+- IAM: 统一身份认证（Identity and Access Management)，简称IAM,是权限控制中心。
+
+- RouterManager: 请求路由注册器，负责注册所有的核心的路由和插件定义的路由，以及OpenAPI的路由注册。
+
+- PluginManager: 插件管理器，负责所有的插件的启用、卸载、类加载、类卸载等功能，插件的资源管理，配置资源和管理端资源。
+
+- HookManager: 负责所有的钩子的暴露、钩子实现的查找、钩子注册到声明周期等动作，还有内部方法的隐藏和可供插件调用的方法的暴露。可共享事件`@SharedEvent`的桥接
+
+- CRDManager: 负责所有的定制资源持久化模型的管理。
+
+- StaticFiles：由 PluginManager 加载。
+
+- 类似 manifest 和 RoleTemplates 的 yaml。
+
+- Listeners：由 PluginManager 管理。
+
+- Spring Bean Components：委托给 PluginManager 管理。
+
+![img not found](assets/backend.drawio.png)
+
+### 类加载
+
+插件启用加载时，由 `PluginManager` 创建一个新的 `PluginClassLoader` 实例负责加载插件类和资源，`PluginClassLoader`的`parent` 为 Ikaros 使用的类加载器，加载顺序符合双亲委派机制。
+
+![](https://docs.oracle.com/cd/E19501-01/819-3659/images/dgdeploy2.gif)
+
+#### 权限控制
+
+自定义角色模板yml文件，core根据这些文件对插件定义的API进行权限控制
+
+
 
 ## 时间线
 
@@ -79,3 +118,11 @@
 
 1. *已创建 RFC*
 2. *重大更改的更新，包括状态更改。*
+
+## 参考
+
+- [Halo Plugin RFC](https://github.com/halo-dev/rfcs/blob/main/plugin/pluggable-design.md)
+- [Chapter 5. Loading, Linking, and Initializing](https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-5.html)
+- [Chapter 12. Execution](https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html#jls-12.6)
+- [Class Loader API Doc](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/ClassLoader.html)
+- [Oracle Chapter 2 Class Loaders](https://docs.oracle.com/cd/E19501-01/819-3659/beade/index.html)
