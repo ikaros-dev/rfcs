@@ -11,7 +11,7 @@
 
 服务端
 
-- 参考[Kubernetes CRD](https://kubernetes.io/zh-cn/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/) 和 [OpenAPI v3](https://spec.openapis.org/oas/v3.1.0) 以及 [Halo Extension]([rfcs/extension at main · halo-dev/rfcs · GitHub](https://github.com/halo-dev/rfcs/tree/main/extension)) 设计定制资源定义，方面插件进行数据持久化
+- 参考[Kubernetes CRD](https://kubernetes.io/zh-cn/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/) 和 [OpenAPI v3](https://spec.openapis.org/oas/v3.1.0) 以及 [Halo Extension](https://github.com/halo-dev/rfcs/tree/main/extension) 设计定制资源定义，方面插件进行数据持久化
 - 服务端API支持插件进行拓展，core 提供统一的API生成方式，权限暂时不做更细粒度的划分，全部走`JWT`
 - 实现插件的类加载，并提供对插件操作的API
 - core 提供 hook，供插件在一些非关键地方进行操作，非关键指的是不影响本体的正常运行
@@ -85,8 +85,6 @@
 #### 数据持久化
 
 插件使用CRD进行数据持久化
-
-
 
 ## 时间线
 
